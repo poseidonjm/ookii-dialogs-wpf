@@ -172,7 +172,7 @@ namespace Ookii.Dialogs.Wpf
         public string UserName
         {
             get { return _credentials.UserName ?? string.Empty; }
-            private set
+            set
             {
                 _confirmTarget = null;
                 _credentials.UserName = value;
@@ -422,12 +422,14 @@ namespace Ookii.Dialogs.Wpf
         /// <exception cref="CredentialException">An error occurred while showing the credentials dialog.</exception>
         /// <exception cref="InvalidOperationException"><see cref="Target"/> is an empty string ("").</exception>
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
-        public bool ShowDialog(Window owner)
+        public bool ShowDialog(
+            Window owner,
+            int flags = 0x1)
         {
             if( string.IsNullOrEmpty(_target) )
                 throw new InvalidOperationException(Properties.Resources.CredentialEmptyTargetError);
 
-            UserName = "";
+            //UserName = "";
             Password = "";
             IsStoredCredential = false;
 
@@ -454,7 +456,7 @@ namespace Ookii.Dialogs.Wpf
             IntPtr ownerHandle = owner == null ? NativeMethods.GetActiveWindow() : new WindowInteropHelper(owner).Handle;
             bool result;
             if( NativeMethods.IsWindowsVistaOrLater )
-                result = PromptForCredentialsCredUIWin(ownerHandle, storedCredentials);
+                result = PromptForCredentialsCredUIWin(ownerHandle, storedCredentials, (NativeMethods.CredUIWinFlags)flags);
             else
                 result = PromptForCredentialsCredUI(ownerHandle, storedCredentials);
             return result;
@@ -736,10 +738,14 @@ namespace Ookii.Dialogs.Wpf
             }
         }
 
-        private bool PromptForCredentialsCredUIWin(IntPtr owner, bool storedCredentials)
+        private bool PromptForCredentialsCredUIWin(
+            IntPtr owner,
+            bool storedCredentials,
+            NativeMethods.CredUIWinFlags flags
+            )
         {
             NativeMethods.CREDUI_INFO info = CreateCredUIInfo(owner, false);
-            NativeMethods.CredUIWinFlags flags = NativeMethods.CredUIWinFlags.Generic;
+            //NativeMethods.CredUIWinFlags flags = NativeMethods.CredUIWinFlags.Generic;
             if( ShowSaveCheckBox )
                 flags |= NativeMethods.CredUIWinFlags.Checkbox;
 

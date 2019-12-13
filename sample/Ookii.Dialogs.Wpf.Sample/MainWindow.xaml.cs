@@ -61,6 +61,9 @@ namespace Ookii.Dialogs.Wpf.Sample
             case 6:
                 ShowSaveFileDialog();
                 break;
+            case 7:
+                ShowCredentialDialogV2();
+                break;
             }
         }
 
@@ -151,7 +154,49 @@ namespace Ookii.Dialogs.Wpf.Sample
                     MessageBox.Show(this, string.Format("You entered the following information:\nUser name: {0}\nPassword: {1}", dialog.Credentials.UserName, dialog.Credentials.Password), "Credential dialog sample");
                     // Normally, you should verify if the credentials are correct before calling ConfirmCredentials.
                     // ConfirmCredentials will save the credentials if and only if the user checked the save checkbox.
-                    dialog.ConfirmCredentials(true);
+                    if(dialog.ShowSaveCheckBox)
+                        dialog.ConfirmCredentials(true);
+                }
+            }
+        }
+
+
+        [Flags]
+        public enum CredUIWinFlags
+        {
+            Generic = 0x1,
+            Checkbox = 0x2,
+            AutoPackageOnly = 0x10,
+            InCredOnly = 0x20,
+            EnumerateAdmins = 0x100,
+            EnumerateCurrentUser = 0x200,
+            SecurePrompt = 0x1000,
+            Pack32Wow = 0x10000000
+        }
+
+        private void ShowCredentialDialogV2()
+        {
+            using (CredentialDialog dialog = new CredentialDialog())
+            {
+                // The window title will not be used on Vista and later; there the title will always be "Windows Security".
+                dialog.WindowTitle = "Credential dialog sample";
+                dialog.MainInstruction = "Please enter your username and password.";
+                dialog.Content = "Since this is a sample the credentials won't be used for anything, so you can enter anything you like.";
+                //dialog.ShowSaveCheckBox = false;
+                dialog.ShowUIForSavedCredentials = true;
+                
+                dialog.UserName = "CYBER04\\Juan";
+                // The target is the key under which the credentials will be stored.
+                // It is recommended to set the target to something following the "Company_Application_Server" pattern.
+                // Targets are per user, not per application, so using such a pattern will ensure uniqueness.
+                dialog.Target = "Ookii_DialogsWpfSample_www.example.com";
+                if (dialog.ShowDialog(this, (int)CredUIWinFlags.InCredOnly))
+                {
+                    MessageBox.Show(this, string.Format("You entered the following information:\nUser name: {0}\nPassword: {1}", dialog.Credentials.UserName, dialog.Credentials.Password), "Credential dialog sample");
+                    // Normally, you should verify if the credentials are correct before calling ConfirmCredentials.
+                    // ConfirmCredentials will save the credentials if and only if the user checked the save checkbox.
+                    //if (dialog.ShowSaveCheckBox)
+                    //    dialog.ConfirmCredentials(true);
                 }
             }
         }
