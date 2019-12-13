@@ -390,6 +390,7 @@ namespace Ookii.Dialogs.Wpf
         /// Shows the credentials dialog as a modal dialog with the specified owner.
         /// </summary>
         /// <param name="owner">The <see cref="Window"/> that owns the credentials dialog.</param>
+        /// <param name="flags">CredUIWinFlags flag to help customize the dialog</param>
         /// <returns><see langword="true" /> if the user clicked OK; otherwise, <see langword="false" />.</returns>
         /// <remarks>
         /// <para>
