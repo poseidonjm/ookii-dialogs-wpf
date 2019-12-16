@@ -345,6 +345,11 @@ namespace Ookii.Dialogs.Wpf
         /// </remarks>
         public bool IsStoredCredential { get; private set; }
 
+        /// <summary>
+        /// Output credential byte array
+        /// </summary>
+        public byte[] AuthBlob { get; private set; }
+
 
         /// <summary>
         /// Shows the credentials dialog as a modal dialog.
@@ -789,6 +794,9 @@ namespace Ookii.Dialogs.Wpf
                         if( storedCredentials && !IsSaveChecked )
                             DeleteCredential(Target);
                     }
+                    int size = Convert.ToInt32(outBufferSize);
+                    AuthBlob = new byte[size];
+                    Marshal.Copy(outBuffer, AuthBlob, 0, size);
                     return true;
                 case NativeMethods.CredUIReturnCodes.ERROR_CANCELLED:
                     return false;
