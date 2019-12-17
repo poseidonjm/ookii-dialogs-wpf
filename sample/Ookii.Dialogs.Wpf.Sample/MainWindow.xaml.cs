@@ -189,8 +189,8 @@ namespace Ookii.Dialogs.Wpf.Sample
                 // The target is the key under which the credentials will be stored.
                 // It is recommended to set the target to something following the "Company_Application_Server" pattern.
                 // Targets are per user, not per application, so using such a pattern will ensure uniqueness.
-                //dialog.Target = "Ookii_DialogsWpfSample_www.example.com";
-                if (dialog.ShowDialog(this, (int)CredUIWinFlags.InCredOnly))
+                dialog.Target = "Ookii_DialogsWpfSample_www.example.com";
+                if (dialog.ShowDialog(this, (int)CredUIWinFlags.InCredOnly, 0))
                 {
                     MessageBox.Show(this, string.Format("You entered the following information:\nUser name: {0}\nPassword: {1}", dialog.Credentials.UserName, dialog.Credentials.Password), "Credential dialog sample");
                     // Normally, you should verify if the credentials are correct before calling ConfirmCredentials.

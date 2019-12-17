@@ -396,6 +396,7 @@ namespace Ookii.Dialogs.Wpf
         /// </summary>
         /// <param name="owner">The <see cref="Window"/> that owns the credentials dialog.</param>
         /// <param name="flags">CredUIWinFlags flag to help customize the dialog</param>
+        /// <param name="errorcode">errorcode to help show error message when credentials are incorrect</param>
         /// <returns><see langword="true" /> if the user clicked OK; otherwise, <see langword="false" />.</returns>
         /// <remarks>
         /// <para>
@@ -430,7 +431,8 @@ namespace Ookii.Dialogs.Wpf
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
         public bool ShowDialog(
             Window owner,
-            int flags = 0x1)
+            int flags = 0x1,
+            int errorcode = 0)
         {
             if( string.IsNullOrEmpty(_target) )
                 throw new InvalidOperationException(Properties.Resources.CredentialEmptyTargetError);
@@ -462,7 +464,7 @@ namespace Ookii.Dialogs.Wpf
             IntPtr ownerHandle = owner == null ? NativeMethods.GetActiveWindow() : new WindowInteropHelper(owner).Handle;
             bool result;
             if( NativeMethods.IsWindowsVistaOrLater )
-                result = PromptForCredentialsCredUIWin(ownerHandle, storedCredentials, (NativeMethods.CredUIWinFlags)flags);
+                result = PromptForCredentialsCredUIWin(ownerHandle, storedCredentials, (NativeMethods.CredUIWinFlags)flags, Convert.ToUInt32(errorcode));
             else
                 result = PromptForCredentialsCredUI(ownerHandle, storedCredentials);
             return result;
@@ -747,7 +749,8 @@ namespace Ookii.Dialogs.Wpf
         private bool PromptForCredentialsCredUIWin(
             IntPtr owner,
             bool storedCredentials,
-            NativeMethods.CredUIWinFlags flags
+            NativeMethods.CredUIWinFlags flags,
+            uint errorcode
             )
         {
             NativeMethods.CREDUI_INFO info = CreateCredUIInfo(owner, false);
@@ -773,7 +776,7 @@ namespace Ookii.Dialogs.Wpf
 
                 uint outBufferSize;
                 uint package = 0;
-                NativeMethods.CredUIReturnCodes result = NativeMethods.CredUIPromptForWindowsCredentials(ref info, 0, ref package, inBuffer, inBufferSize, out outBuffer, out outBufferSize, ref _isSaveChecked, flags);
+                NativeMethods.CredUIReturnCodes result = NativeMethods.CredUIPromptForWindowsCredentials(ref info, errorcode, ref package, inBuffer, inBufferSize, out outBuffer, out outBufferSize, ref _isSaveChecked, flags);
                 switch( result )
                 {
                 case NativeMethods.CredUIReturnCodes.NO_ERROR:
